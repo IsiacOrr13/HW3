@@ -12,10 +12,16 @@ def main():
     # create tight clusters
     clusters, labels = make_clusters(scale=0.3)
     plot_clusters(clusters, labels, filename="figures/tight_clusters.png")
+    c1 = KMeans(3, 1e-6, 100)
+    labels = c1.fit(clusters)
+    plot_clusters(clusters, labels, filename="figures/tight_clusters_output.png")
 
     # create loose clusters
     clusters, labels = make_clusters(scale=2)
     plot_clusters(clusters, labels, filename="figures/loose_clusters.png")
+    c2 = KMeans(3, 1e-6, 100)
+    labels = c2.fit(clusters)
+    plot_clusters(clusters, labels, filename="figures/loose_clusters_output.png")
 
     """
     uncomment this section once you are ready to visualize your kmeans + silhouette implementation

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def make_clusters(
-        n: int = 500, 
+        n: int = 500, #Change this back to 500!
         m: int = 2, 
         k: int = 3, 
         bounds: tuple = (-10, 10),

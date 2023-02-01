@@ -4,6 +4,9 @@ from scipy.spatial.distance import cdist
 
 class KMeans:
     def __init__(self, k: int, tol: float = 1e-6, max_iter: int = 100):
+        self._k = k
+        self._tol = tol
+        self._max_iter = max_iter
         """
         In this method you should initialize whatever attributes will be required for the class.
 
@@ -22,6 +25,29 @@ class KMeans:
         """
 
     def fit(self, mat: np.ndarray):
+        k_idx = np.array(np.random.choice(len(mat), self._k))
+        centroids = np.zeros(shape=(self._k, 2))
+        for idx, k in enumerate(k_idx):
+            centroids[idx] = mat[k]
+        del_error = 1
+        error = 0
+        prev_error = 0
+        counter = 0
+        while del_error > self._tol and counter < self._max_iter:
+            labels = []
+            k_dist = cdist(centroids, mat)
+            counter += 1
+            for i in range(len(mat)):
+                dists = k_dist[:,i]
+                lab = np.argmin(dists)
+                labels.append(lab)
+            centroids = self.get_centroids(mat, labels, centroids)
+            prev_error = error
+            error = self.get_error(mat, labels, centroids)
+            del_error = abs(error - prev_error)
+        return labels
+
+
         """
         Fits the kmeans algorithm onto a provided 2D matrix.
         As a bit of background, this method should not return anything.
@@ -54,21 +80,42 @@ class KMeans:
                 a 1D array with the cluster label for each of the observations in `mat`
         """
 
-    def get_error(self) -> float:
-        """
-        Returns the final squared-mean error of the fit model. You can either do this by storing the
-        original dataset or recording it following the end of model fitting.
+    def get_error(self, mat, labels, centroids) -> float:
+        dist_mat = cdist(centroids, mat)
+        error = 0
+        for idx, ele in enumerate(mat):
+            curr_label = labels[idx]
+            error += dist_mat[curr_label,idx]
+        return error
 
-        outputs:
-            float
-                the squared-mean error of the fit model
-        """
 
-    def get_centroids(self) -> np.ndarray:
-        """
-        Returns the centroid locations of the fit model.
+    def get_centroids(self, mat, labels, centroids) -> np.ndarray:
+        for i in range(self._k):
+            mask = np.array(labels) == i
+            in_k = mat[mask]
+            length = in_k.shape[0]
+            sum_x = np.sum(in_k[:,0])
+            sum_y = np.sum(in_k[:,1])
+            centroids[i] = [sum_x/length, sum_y/length]
+        return centroids
 
-        outputs:
-            np.ndarray
-                a `k x m` 2D matrix representing the cluster centroids of the fit model
-        """
+#centroids are not updating past first element
+
+
+"""
+Returns the centroid locations of the fit model.
+
+outputs:
+    np.ndarray
+        a `k x m` 2D matrix representing the cluster centroids of the fit model
+"""
+
+
+"""
+Returns the final squared-mean error of the fit model. You can either do this by storing the
+original dataset or recording it following the end of model fitting.
+
+outputs:
+    float
+        the squared-mean error of the fit model
+"""
