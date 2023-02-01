@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn import metrics
 from cluster import (
         KMeans, 
         Silhouette, 
@@ -21,7 +22,8 @@ def main():
     km.fit(clusters)
     pred = km.predict(clusters)
     scores = Silhouette().score(clusters, pred)
-    plot_multipanel(clusters, labels, pred, scores)
+    #plot_multipanel(clusters, pred, pred, scores)
+
     
 
 if __name__ == "__main__":

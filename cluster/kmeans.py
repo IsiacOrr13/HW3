@@ -4,9 +4,12 @@ from scipy.spatial.distance import cdist
 
 class KMeans:
     def __init__(self, k: int, tol: float = 1e-6, max_iter: int = 100):
-        self._k = k
-        self._tol = tol
-        self._max_iter = max_iter
+        if (type(k) == int and k > 0):
+            self._k = k
+            self._tol = tol
+            self._max_iter = max_iter
+        else:
+            print('Invalid k Argument')
         """
         In this method you should initialize whatever attributes will be required for the class.
 
