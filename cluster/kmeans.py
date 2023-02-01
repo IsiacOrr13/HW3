@@ -41,46 +41,22 @@ class KMeans:
                 dists = k_dist[:,i]
                 lab = np.argmin(dists)
                 labels.append(lab)
-            centroids = self.get_centroids(mat, labels, centroids)
+            centroids = self._get_centroids(mat, labels, centroids)
             prev_error = error
-            error = self.get_error(mat, labels, centroids)
+            error = self._get_error(mat, labels, centroids)
             del_error = abs(error - prev_error)
-        return labels
-
-
-        """
-        Fits the kmeans algorithm onto a provided 2D matrix.
-        As a bit of background, this method should not return anything.
-        The intent here is to have this method find the k cluster centers from the data
-        with the tolerance, then you will use .predict() to identify the
-        clusters that best match some data that is provided.
-
-        In sklearn there is also a fit_predict() method that combines these
-        functions, but for now we will have you implement them both separately.
-
-        inputs:
-            mat: np.ndarray
-                A 2D matrix where the rows are observations and columns are features
-        """
+        self._centroids = centroids
 
     def predict(self, mat: np.ndarray) -> np.ndarray:
-        """
-        Predicts the cluster labels for a provided matrix of data points--
-            question: what sorts of data inputs here would prevent the code from running?
-            How would you catch these sorts of end-user related errors?
-            What if, for example, the matrix is of a different number of features than
-            the data that the clusters were fit on?
+        k_dist = cdist(self._centroids, mat)
+        labels = []
+        for i in range(len(mat)):
+            dists = k_dist[:, i]
+            lab = np.argmin(dists)
+            labels.append(lab)
+        return np.array(labels)
 
-        inputs:
-            mat: np.ndarray
-                A 2D matrix where the rows are observations and columns are features
-
-        outputs:
-            np.ndarray
-                a 1D array with the cluster label for each of the observations in `mat`
-        """
-
-    def get_error(self, mat, labels, centroids) -> float:
+    def _get_error(self, mat, labels, centroids) -> float:
         dist_mat = cdist(centroids, mat)
         error = 0
         for idx, ele in enumerate(mat):
@@ -89,7 +65,7 @@ class KMeans:
         return error
 
 
-    def get_centroids(self, mat, labels, centroids) -> np.ndarray:
+    def _get_centroids(self, mat, labels, centroids) -> np.ndarray:
         for i in range(self._k):
             mask = np.array(labels) == i
             in_k = mat[mask]
@@ -99,7 +75,20 @@ class KMeans:
             centroids[i] = [sum_x/length, sum_y/length]
         return centroids
 
-#centroids are not updating past first element
+"""
+Fits the kmeans algorithm onto a provided 2D matrix.
+As a bit of background, this method should not return anything.
+The intent here is to have this method find the k cluster centers from the data
+with the tolerance, then you will use .predict() to identify the
+clusters that best match some data that is provided.
+
+In sklearn there is also a fit_predict() method that combines these
+functions, but for now we will have you implement them both separately.
+
+inputs:
+    mat: np.ndarray
+        A 2D matrix where the rows are observations and columns are features
+"""
 
 
 """
@@ -118,4 +107,19 @@ original dataset or recording it following the end of model fitting.
 outputs:
     float
         the squared-mean error of the fit model
+"""
+"""
+Predicts the cluster labels for a provided matrix of data points--
+    question: what sorts of data inputs here would prevent the code from running?
+    How would you catch these sorts of end-user related errors?
+    What if, for example, the matrix is of a different number of features than
+    the data that the clusters were fit on?
+
+inputs:
+    mat: np.ndarray
+        A 2D matrix where the rows are observations and columns are features
+
+outputs:
+    np.ndarray
+        a 1D array with the cluster label for each of the observations in `mat`
 """
